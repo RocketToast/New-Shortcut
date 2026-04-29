@@ -45,9 +45,7 @@ function New-ShortCut {
 
         # Ensure shortcut path ends with backslash
         if ( $ShortcutPath -notmatch '\\$' ) {
-
             $ShortcutPath += '\'
-
         }
 
         $Full = "$ShortcutPath$Name$ext"
@@ -65,18 +63,15 @@ function New-ShortCut {
             $Shortcut.TargetPath = $TargetPath
 
             if ( $Description ) {
-
                 $Shortcut.Description = $Description
-
             }
+            
             if ( $IconPath ) {
-
                 $Shortcut.IconLocation = "$IconPath,$IconIndex"
-
             }
 
             $Shortcut.Save()
-
+            
         } else {
 
             # Create .url shortcut
@@ -99,11 +94,8 @@ function New-ShortCut {
         }
 
         Write-Verbose "Shortcut created successfully at: $Full"
-
     } catch {
-
         Write-Error "Error: $($_.Exception.Message)"
-
     } # End Try / Catch
 } # End Function
 
