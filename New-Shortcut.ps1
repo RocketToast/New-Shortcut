@@ -42,9 +42,6 @@ You'll need the IconIndex parameter in conjunction with IconPath. Default is 0.
 
 .EXAMPLE
 
-This is an example to make a shortcut on a users desktop to Sysinternals Process Explorer
-with a microchip icon from `SHELL32.dll`.
-
 $ShortcutSplat = @{
     TargetPath   = '\\live.sysinternals.com\tools\procexp64.exe'
     ShortcutPath = "$env:USERPROFILE\Desktop\"
@@ -54,12 +51,14 @@ $ShortcutSplat = @{
 }
 New-ShortCut @ShortcutSplat
 
-.EXAMPLE
+This is an example to make a shortcut on a users desktop to Sysinternals Process Explorer
+with a microchip icon from `SHELL32.dll`.
 
-The example is making a shortcut to the `C:\Windows\` folder in the documents folder.
+.EXAMPLE
 
 New-Shortcut -Targetpath 'C:\Windows' -ShortcutPath "$env:USERPROFILE\Documents\" -Name "Windows Folder"
 
+The example here is making a shortcut to the `C:\Windows\` folder in the documents folder.
 #>
     [CmdletBinding( DefaultParameterSetName = "Shortcut" )]
     param (
@@ -68,6 +67,8 @@ New-Shortcut -Targetpath 'C:\Windows' -ShortcutPath "$env:USERPROFILE\Documents\
                     ParameterSetName = "Shortcut" )]
         [Parameter( Mandatory        = $true,
                     ParameterSetName = "Icon" )]
+        [ValidatePattern('^\D\:\\|^http|^\\\\')]
+        [Alias("Target")]
         [string]$TargetPath,
 
         [Parameter( Mandatory        = $true,
@@ -75,6 +76,7 @@ New-Shortcut -Targetpath 'C:\Windows' -ShortcutPath "$env:USERPROFILE\Documents\
                     ParameterSetName = "Shortcut" )]
         [Parameter( Mandatory        = $true,
                     ParameterSetName = "Icon" )]
+        [Alias('Shortcut','sc')]
         [string]$ShortcutPath,
 
         [Parameter( Mandatory        = $true,
@@ -88,23 +90,25 @@ New-Shortcut -Targetpath 'C:\Windows' -ShortcutPath "$env:USERPROFILE\Documents\
         [string]$Description,
 
         [Parameter( Mandatory        = $true,
-                    ParameterSetName = "Icon" )]
+                    ParameterSetName = "Icon",
+                    HelpMessage      = "This is the path to the .ico or .dll file" )]
+        [Alias('Icon')]
         [string]$IconPath,
 
         [Parameter( Mandatory        = $true,
-                    ParameterSetName = "Icon" )]
+                    ParameterSetName = "Icon",
+                    HelpMessage      = "The index number of the iconfile. Default = 0" )]
+        [Alias('Index')]
         [int]$IconIndex = 0
     )
 
-    try
-    {
+    try {
+
         # Determine extension based on target type
         $ext = if ( $TargetPath -match '^\D\:\\' ) {
             '.lnk'
-        } elseif ( $TargetPath -match '^http' -or $TargetPath -match '\\\\' ) {
+        } elseif ( $TargetPath -match '^http|^\\\\' ) {
             '.url'
-        } else {
-            throw "Your shortcut MUST begin with a driveletter (ex: C:\), http or \\ !"
         }
 
         # Ensure shortcut path ends with backslash
@@ -147,11 +151,10 @@ New-Shortcut -Targetpath 'C:\Windows' -ShortcutPath "$env:USERPROFILE\Documents\
 
     $URLFileContent = @"
         [InternetShortcut]
-        IDList=
         URL=$TargetPath
         IconIndex=$IconIndex
-        HotKey=0
         IconFile=$IconPath
+        Description=$Description
 "@
 
     $NewItemSplat = @{
