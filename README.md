@@ -9,7 +9,7 @@ For the icon:
 - For a custom icon, specify the path to your icon file.
 - If you're going to use one of the default icons from `SHELL32.dll` change your IconIndex number to your desired icon pictured [HERE](https://renenyffenegger.ch/development/Windows/PowerShell/examples/WinAPI/ExtractIconEx/shell32.html)
 
-The following splatted `New-ShortCut` makes a `.url` shortcut to Sysinternals on your desktop with the microchip icon.
+The following splatted `New-ShortCut` makes a `.url` shortcut to Sysinternals Process Explorer on your desktop with the microchip icon.
 
 ```ps
 $ShortcutSplat = @{
